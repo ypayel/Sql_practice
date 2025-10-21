@@ -1,0 +1,127 @@
+--SELECT  'ARKA GDYNIA JEST NAJLIEPSZA';
+--SELECT N'GDANSK' - LITERA N JEST UNIKATOWA I POZWALA NA CZYTANIE TEKSTU W INNYCH JEZYKACH
+
+/*
+TO JEST
+KOMENTARZ
+WIELOLINIJKOWY
+*/
+
+--SELECT * FROM dbo.Employees; - wyswietla wszystkich pracownikow
+
+--SELECT lastname, firstname from dbo.Employees; - wyswietla imie i nazwisko pracownika
+
+--Aliasy kolumn
+
+--SELECT firstname AS imie, lastname as Nazwisko FROM dbo.Employees; - as zmienia przy wyswietleniu nazwe kolumn
+
+
+
+
+--Filtrowanie
+
+--SELECT * FROM Employees WHERE city = N'London'; - WHERE wybiera warunek przy jakim chcemy wyswietlicz wartosci
+
+
+
+--Operatory logiczne
+
+--SELECT * FROM [Order Details] WHERE Quantity > 12; - wieksze niz 12
+
+--SELECT * FROM [Order Details] WHERE Quantity < 12; - mniejsze niz 12
+
+--SELECT * FROM [Order Details] WHERE Quantity <> 12;
+
+--SELECT * FROM [Order Details] WHERE Quantity != 12;
+
+--SELECT * FROM [Order Details] WHERE Quantity between 12 and 20; - pomiedzy 12 i 20;
+
+--SELECT * FROM [Order Details] WHERE Quantity > 12 and Quantity < 20;
+
+--SELECT * FROM [Order Details] WHERE Quantity >= 12 and Quantity <= 20;
+
+
+
+--Operatory arytmetyczne
+
+--SELECT *, UnitPrice*Quantity*(1+0.22) AS LineTotal FROM [Order Details] WHERE UnitPrice*Quantity*(1+0.22)>1000;
+
+
+
+
+--SELECT * FROM [Order Details] WHERE Quantity > 12 or Quantity < 20 and Quantity <25; - kolejnosc wykonywania bedzie najpierw and a poznij or
+
+--SELECT * FROM [Order Details] WHERE (Quantity > 12 and Quantity < 20) and Quantity < 25; - jesli chcemy zeby sie wykonalo cos szybcej to najwias ma pierszenstwo
+
+--SELECT * FROM Employees WHERE region = null; - bedzie null poniewaz wartosc jest nieznana
+
+--SELECT * FROM Employees WHERE region  is null; - jest wartoscia nioeznana
+
+--SELECT * FROM Employees WHERE region is not null; nie jest wartoscia nieznana
+
+
+--SELECT FirstName FROM Person.Person WHERE FirstName LIKE N 'a%' - wyswietla wszstkie imiena z litera A
+
+--SELECT FirstName FROM Person.Person WHERE FirstName LIKE N 'k_t%' - miedzy k i t
+
+--SELECT FirstName FROM Person.Person WHERE FirstName LIKE N '[m-t]%' w przedziale miedzy m i t
+
+--SELECT FirstName FROM Person.Person WHERE FirstName LIKE N '[^a]%' - imiona bez A
+
+--SELECT DISTINCT FirstName FROM Person.Person - usunancz powtazalne kolunny
+
+--SELECT FirstName + 'ARKA GDYNIA' + LastName FROM Person.Person; - dodanie tekstu w srodek wersza
+
+/*
+NORTWIND
+1,2,3,4,5,8,9
+
+
+ADV
+13,12,11
+*/
+
+-- Northwind
+-- ZADANIE 1
+
+--SELECT * FROM Customers
+
+
+--ZADANIE 2
+
+--SELECT ContactName FROM Customers
+
+--ZADANIE 3
+
+--SELECT * FROM Customers WHERE country = N'Germany';
+
+--ZADANIE 4
+
+--SELECT * FROM Customers ORDER BY CompanyName DESC;
+
+--ZADANIE 5
+
+--SELECT * FROM Products WHERE UnitPrice > 20;
+
+--ZADANIE 8
+
+--SELECT * FROM ORDERS WHERE ORDERDATE >= '1997-01-01' and orderdate <= '1997-12-31';
+
+--ZADANIE 9
+
+--SELECT * FROM OrderS ORDER BY OrderDate ASC;
+
+
+--ADV
+
+--ZADANIE 11
+
+--SELECT * FROM Person.Person;
+
+--ZADANIE 12
+
+--SELECT FirstName, LastName FROM Person.Person;
+
+--ZADANIE 13
+
+--SELECT * FROM Production.Product WHERE StandardCost > 1000;
