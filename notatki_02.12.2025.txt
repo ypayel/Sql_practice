@@ -1,0 +1,29 @@
+
+/*
+
+Srednia i td
+
+SELECT C FROM C;
+
+SELECT AVG(c) as Srednia, sum(c) as suma, min(c) as minimalna, max(c) as maksymalna, count(*) as iloscwierszy FROM c;
+
+SELECT sum(c)/count(*) FROM c;
+
+SELECT AVG(isnull(c, 0)) FROM c;
+
+*/
+
+SELECT OrderID, Quantity, UnitPrice, Discount FROM [Order Details];
+
+SELECT VAR(OrderID), SUM(Quantity) as Suma, AVG(UnitPrice) as SredniaCena, MAX(Discount) as maxzniczka, count (*) as iloscwierszy FROM [Order Details] GROUP BY OrderID;
+
+
+SELECT VAR(OrderID), SUM(Quantity) as Suma, AVG(UnitPrice) as SredniaCena, MAX(Discount) as maxzniczka, count (*) as iloscwierszy FROM [Order Details] GROUP BY OrderID, Quantity;
+
+
+
+-- Having jest po Groub by i jest podobny do WHERE tez filtruje
+SELECT VAR(OrderID), SUM(Quantity) as Suma, AVG(UnitPrice) as SredniaCena, MAX(Discount) as maxzniczka, count (*) as iloscwierszy FROM [Order Details] GROUP BY OrderID, Quantity HAVING;
+
+-- pod zapytanie `IN` albo `NOT IN`, sa tez pod zapytanie w zapytaniu, wiecej niz 4 pod zapytania jest ciezko rozczytac o czym jest kod
+-- `EXISTS` sprawdza zapytanie jest prawdziwe to otrzymamy true jesli falszywe to false, albo `NOT EXISTS` to sprawdza czy isnieje czy nie
