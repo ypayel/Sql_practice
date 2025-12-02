@@ -1,0 +1,160 @@
+
+--Zadanie 1
+SELECT 
+C.CategoryID, 
+C.CategoryName,
+AVG(P.UnitPrice) as AveragePrice
+FROM 
+dbo.Products P
+LEFT JOIN 
+dbo.Categories C ON P.CategoryID = C.CategoryID
+GROUP BY 
+C.CategoryID, 
+C.CategoryName
+ORDER BY C.CategoryID;
+
+--Zadanie 2
+SELECT
+C.CustomerID, 
+C.CompanyName, 
+COUNT(O.OrderID) AS TotalOrders
+FROM
+dbo.Customers C 
+LEFT JOIN 
+dbo.Orders O
+ON C.CustomerID = O.CustomerID
+GROUP BY
+C.CustomerID,
+C.CompanyName
+ORDER BY 
+TotalOrders DESC;
+
+--Zadanie 3
+SELECT 
+    C.CustomerID,
+    C.CompanyName,
+    SUM(OD.Quantity * OD.UnitPrice * (1 - OD.Discount)) AS TotalOrderValue
+FROM dbo.Customers C
+LEFT JOIN dbo.Orders O 
+       ON C.CustomerID = O.CustomerID
+LEFT JOIN dbo.[Order Details] OD 
+       ON O.OrderID = OD.OrderID
+GROUP BY 
+    C.CustomerID,
+    C.CompanyName
+ORDER BY 
+    TotalOrderValue DESC;
+
+
+--Zadanie 4
+SELECT 
+    C.CustomerID,
+    C.CompanyName,
+    AVG(OrderItemCount) AS AvgProductsPerOrder
+FROM 
+    dbo.Customers C
+LEFT JOIN (
+        SELECT 
+            O.CustomerID,
+            O.OrderID,
+            SUM(OD.Quantity) AS OrderItemCount
+        FROM dbo.Orders O
+        JOIN dbo.[Order Details] OD
+             ON O.OrderID = OD.OrderID
+        GROUP BY 
+            O.CustomerID,
+            O.OrderID
+) AS X
+    ON C.CustomerID = X.CustomerID
+GROUP BY 
+    C.CustomerID,
+    C.CompanyName
+ORDER BY 
+    AvgProductsPerOrder DESC;
+
+--Zadanie 5
+SELECT 
+ProductID,
+ProductName,
+UnitPrice
+FROM dbo.Products
+WHERE UnitPrice > 20
+ORDER BY UnitPrice DESC;
+
+--Zadanie 6
+SELECT 
+    C.CustomerID,
+    C.CompanyName,
+    COUNT(O.OrderID) AS OrderCount
+FROM dbo.Customers C
+LEFT JOIN dbo.Orders O 
+       ON C.CustomerID = O.CustomerID
+GROUP BY 
+    C.CustomerID,
+    C.CompanyName
+HAVING 
+    COUNT(O.OrderID) > 5
+ORDER BY 
+    OrderCount DESC;
+
+--Zadanie 7
+SELECT 
+    AVG(TotalQuantity) AS AvgQuantityPerOrder
+FROM (
+        SELECT 
+            OD.OrderID,
+            SUM(OD.Quantity) AS TotalQuantity
+        FROM dbo.[Order Details] OD
+        GROUP BY OD.OrderID
+     ) AS X;
+
+--Zadanie 8 
+SELECT
+    E.EmployeeID,
+    E.FirstName,
+    E.LastName,
+    SUM(OD.Quantity * OD.UnitPrice * (1 - OD.Discount)) AS TotalOrderValue
+FROM dbo.Employees E
+LEFT JOIN dbo.Orders O 
+       ON E.EmployeeID = O.EmployeeID
+LEFT JOIN dbo.[Order Details] OD 
+       ON O.OrderID = OD.OrderID
+GROUP BY 
+    E.EmployeeID,
+    E.FirstName,
+    E.LastName
+ORDER BY 
+    TotalOrderValue DESC;
+
+
+--Zadanie 9
+SELECT 
+    P.ProductID,
+    P.ProductName,
+    SUM(OD.Quantity) AS TotalOrdered
+FROM dbo.Products P
+JOIN dbo.[Order Details] OD 
+     ON P.ProductID = OD.ProductID
+GROUP BY 
+    P.ProductID,
+    P.ProductName
+HAVING 
+    SUM(OD.Quantity) > 50
+ORDER BY 
+    TotalOrdered DESC;
+
+--Zadanie 10
+SELECT
+    C.CategoryID,
+    C.CategoryName,
+    AVG(P.UnitPrice) AS AvgPrice
+FROM dbo.Categories C
+JOIN dbo.Products P 
+     ON C.CategoryID = P.CategoryID
+GROUP BY 
+    C.CategoryID,
+    C.CategoryName
+HAVING 
+    COUNT(P.ProductID) > 10
+ORDER BY 
+    AvgPrice DESC;
