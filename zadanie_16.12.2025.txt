@@ -1,0 +1,186 @@
+use master;
+go
+
+drop database if exists uczelnia;
+go
+
+create database uczelnia;
+go
+
+use uczelnia;
+go
+
+
+drop schema if exists merito;
+go
+
+create schema merito;
+go
+
+drop table if exists merito.nauczyciele;
+go
+
+create table merito.nauczyciele
+(id int, imie nvarchar(50) not null, nazwisko nvarchar(50) not null, constraint pk_nauczyciele_id primary key (id));
+go
+
+
+
+drop table if exists merito.studenci;
+go
+
+create table merito.studenci 
+
+/*identity(1,1) zaczyna sie od 1 i powieksza o 1*/
+/*check(wiek >=15) sprawdza czy wiek studentow jest wiekszy albo rowny 15 */
+(ids int identity(1,1) primary key, imie nvarchar(max) not null, nazwisko nvarchar(max) not null, wiek tinyint not null check(wiek >=15), id int);
+go
+
+
+drop table if exists przedmioty;
+go
+
+create table przedmioty
+(idp int primary key, nazwa nvarchar(100) not null default('Bazy dannych'), idq int unique, id int);
+go
+
+select * from merito.nauczyciele;
+select * from merito.studenci;
+select * from przedmioty;
+
+
+insert into merito.nauczyciele values(1, 'Jordan', 'Michael');
+insert into merito.nauczyciele values(2, 'Jan', 'Kowalski');
+insert into merito.nauczyciele values(3, 'Jon', '	Czarny'); 
+insert into merito.nauczyciele values(4, 'Bon', 'Czerwony'); 
+insert into merito.nauczyciele values(5, 'Kuba', 'Zielony'); 
+insert into merito.nauczyciele values(6, 'Jacek', 'Klawisz'); 
+insert into merito.nauczyciele values(7, 'Wojtek', 'Slonce'); 
+insert into merito.nauczyciele values(8, 'Waldek', 'Chmielewski'); 
+insert into merito.nauczyciele values(9, 'Maks', 'Chmiel'); 
+insert into merito.nauczyciele values(10, 'Ihor', 'Dlugi');
+insert into merito.nauczyciele values(11, 'Stanislaw', 'Gdynski'); 
+insert into merito.nauczyciele values(12, 'Tyma', 'Duzy'); 
+
+
+insert into merito.studenci values('Bogdan', 'Radecki', 16, 1);
+insert into merito.studenci values('Radoslaw', 'Zadzi', 22, 9);
+insert into merito.studenci values('Krzszysztow', 'Wolny', 28, 8);
+insert into merito.studenci values('Adam', 'Biernacki', 26, 1);
+insert into merito.studenci values('Andrzej', 'Sienkiewicz', 19, 7);
+insert into merito.studenci values('Marcel', 'Skaryna', 18, 5);
+insert into merito.studenci values('Malwina', 'Uroda', 21, 2);
+insert into merito.studenci values('Martyna', 'Zabel', 17, NULL);
+insert into merito.studenci values('Alicja', 'Wrobel', 25, 3);
+*/
+
+
+insert into przedmioty values (1, 'Bazy danych', 1,1);
+insert into przedmioty values (2, 'C#', 2,2);
+insert into przedmioty values (3, 'CSS', 3,3);
+insert into przedmioty values (4, 'REACT', 4,4);
+insert into przedmioty values (5, 'JS', 12,2);
+insert into przedmioty values (6, 'JAVA', 5,5);
+insert into przedmioty values (7, 'Type script', 6,6);
+insert into przedmioty values (8, 'Node.js', 7,7);
+insert into przedmioty values (9, 'Python', 8,8);
+insert into przedmioty values (10, 'My sql', 9,9);
+insert into przedmioty values (11, 'C++', 10,10);
+insert into przedmioty values (12, 'Game devoleper', 11,1);
+
+
+alter table merito.studenci
+add foreign key (id)
+references merito.nauczyciele(id)
+go
+
+
+alter table przedmioty
+add foreign key (id)
+references merito.nauczyciele(id)
+go
+
+
+/* widok(view) jest dla tego zeby zapisywac komedy w pliku, a nie w notatniku, albo obliczenia sredniej i td. Oraz mozna dodac uprawnienija */
+drop view if exists merito.wsb;
+go
+
+create view merito.wsb
+as
+
+select n.imie as ImieNauczyciela,
+n.nazwisko as NazwiskoNauczyciela,
+s.imie as ImieStudenta,
+s.nazwisko as NazwiskoStudenta,
+s.wiek as WiekStudenta,
+p.nazwa as Przedmiot
+from merito.nauczyciele as n
+left join merito.studenci as s on n.id=s.id
+left join przedmioty as p on p.id=n.id;
+
+
+drop proc if exists proc1;
+go
+
+create procedure proc1
+as
+select * from merito.nauczyciele;
+go
+
+proc1
+exec proc1
+execute proc1
+
+
+create procedure proc3 (@ids int)
+as 
+select * from merito.studenci
+where ids=@ids;
+go
+
+exec proc3 12
+
+drop function if exists PoleKwadrat;
+go
+
+create function PoleKwadrat (@a int)
+returns int 
+begin 
+return @a*@a
+end;
+go
+
+create function fukncja1 (@wiek tinyint) 
+returns table
+as
+return
+select * from merito.studenci
+where wiek=@wiek
+go
+
+
+create table merito.parking
+(idq int unique, id int,  idp int primary key);
+go
+
+create procedure add_parking_data 
+@idq int,
+@id int,
+@idp int
+as
+begin
+insert into merito.parking(idq,id,idp)
+values (@idq, @id, @idp)
+end;
+
+exec add_parking_data 4, 100, 1;
+
+/*
+create procedure proc4
+as
+select * from merito.parking;
+go
+
+
+exec proc4
+*/
