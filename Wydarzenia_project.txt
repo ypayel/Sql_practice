@@ -1,0 +1,237 @@
+
+-- =============================================
+-- BAZA DANYCH: System wydarzeń (DB+)
+-- MS SQL Server 2014-2022
+-- =============================================
+
+CREATE DATABASE WydarzeniaDB;
+GO
+USE WydarzeniaDB;
+GO
+
+
+-- TABELA: Role
+
+CREATE TABLE Role (
+    id_roli INT IDENTITY PRIMARY KEY,
+    nazwa_roli NVARCHAR(50) UNIQUE NOT NULL,
+    opis NVARCHAR(200),
+    aktywna BIT DEFAULT 1,
+    data_utworzenia DATE DEFAULT GETDATE(),
+    poziom_uprawnien INT CHECK (poziom_uprawnien >= 1)
+);
+
+INSERT INTO Role (nazwa_roli, opis, poziom_uprawnien) VALUES
+('Administrator','Pelne uprawnienia',5),
+('Organizator','Zarzadzanie wydarzeniami',4),
+('Moderator','Kontrola zapisow',3),
+('Uzytkownik','Zwykly uzytkownik',1),
+('Gosc','Dostep ograniczony',1),
+('Ksiegowosc','Platnosci',4),
+('Marketing','Promocja',3),
+('Prelegent','Prowadzacy',2),
+('Techniczny','Obsluga techniczna',2),
+('Obserwator','Tylko podglad',1);
+
+-- TABELA: Uzytkownicy
+
+CREATE TABLE Uzytkownicy (
+    id_uzytkownika INT IDENTITY PRIMARY KEY,
+    imie NVARCHAR(50) NOT NULL,
+    nazwisko NVARCHAR(50) NOT NULL,
+    email NVARCHAR(100) UNIQUE NOT NULL,
+    haslo NVARCHAR(200) NOT NULL,
+    data_rejestracji DATE DEFAULT GETDATE(),
+    aktywny BIT DEFAULT 1
+);
+
+INSERT INTO Uzytkownicy (imie, nazwisko, email, haslo) VALUES
+('Jan','Kowalski','jan.kowalski@mail.pl','haslo1'),
+('Anna','Nowak','anna.nowak@mail.pl','haslo2'),
+('Piotr','Zielinski','piotr.z@mail.pl','haslo3'),
+('Katarzyna','Mazur','kasia.mazur@mail.pl','haslo4'),
+('Marek','Lewandowski','marek.l@mail.pl','haslo5'),
+('Agnieszka','Dabrowska','aga.d@mail.pl','haslo6'),
+('Tomasz','Wojcik','tomek.w@mail.pl','haslo7'),
+('Natalia','Kaminska','natalia.k@mail.pl','haslo8'),
+('Pawel','Kaczmarek','pawel.k@mail.pl','haslo9'),
+('Magdalena','Piotrowska','magda.p@mail.pl','haslo10');
+
+-- TABELA: Kategorie
+
+CREATE TABLE Kategorie (
+    id_kategorii INT IDENTITY PRIMARY KEY,
+    nazwa NVARCHAR(100) NOT NULL,
+    opis NVARCHAR(200),
+    aktywna BIT DEFAULT 1,
+    data_dodania DATE DEFAULT GETDATE(),
+    priorytet INT CHECK (priorytet BETWEEN 1 AND 10)
+);
+
+INSERT INTO Kategorie (nazwa, opis, priorytet) VALUES
+('IT','Technologie informatyczne',5),
+('Biznes','Rozwoj firm',4),
+('Marketing','Reklama i sprzedaz',3),
+('Edukacja','Szkolenia i kursy',4),
+('Zdrowie','Zdrowy styl zycia',3),
+('Sport','Aktywnosc fizyczna',2),
+('Kultura','Sztuka i muzyka',2),
+('Nauka','Badania i rozwoj',5),
+('Finanse','Zarzadzanie finansami',4),
+('Motywacja','Rozwoj osobisty',3);
+
+-- TABELA: Wydarzenia
+
+CREATE TABLE Wydarzenia (
+    id_wydarzenia INT IDENTITY PRIMARY KEY,
+    nazwa NVARCHAR(150) NOT NULL,
+    opis NVARCHAR(300),
+    data_wydarzenia DATE NOT NULL,
+    cena DECIMAL(8,2) CHECK (cena >= 0),
+    id_kategorii INT,
+    FOREIGN KEY (id_kategorii) REFERENCES Kategorie(id_kategorii)
+);
+
+INSERT INTO Wydarzenia (nazwa, opis, data_wydarzenia, cena, id_kategorii) VALUES
+('Konferencja IT','Nowosci w IT','2025-05-10',199,1),
+('Biznes Forum','Spotkanie przedsiebiorcow','2025-06-15',149,2),
+('Marketing Live','Strategie marketingowe','2025-04-20',99,3),
+('Akademia Programowania','Kurs programowania','2025-07-01',299,1),
+('Zdrowie Plus','Profilaktyka zdrowia','2025-03-30',0,5),
+('Sport Day','Dzien sportu','2025-08-12',50,6),
+('Festiwal Muzyki','Koncerty','2025-09-01',120,7),
+('Nauka Jutra','Konferencja naukowa','2025-10-05',180,8),
+('Finanse Osobiste','Zarzadzanie budzetem','2025-04-10',80,9),
+('Motywacja 360','Rozwoj osobisty','2025-11-20',110,10);
+
+
+-- TABELA: Sale
+
+CREATE TABLE Sale (
+    id_sali INT IDENTITY PRIMARY KEY,
+    nazwa NVARCHAR(100),
+    pojemnosc INT CHECK (pojemnosc > 0),
+    lokalizacja NVARCHAR(100),
+    pietro INT,
+    dostepna BIT DEFAULT 1
+);
+
+INSERT INTO Sale (nazwa, pojemnosc, lokalizacja, pietro) VALUES
+('Sala A',100,'Warszawa',1),
+('Sala B',80,'Warszawa',2),
+('Sala C',120,'Krakow',1),
+('Sala D',60,'Krakow',2),
+('Sala E',150,'Gdansk',1),
+('Sala F',90,'Gdansk',2),
+('Sala G',70,'Poznan',1),
+('Sala H',110,'Poznan',2),
+('Sala I',200,'Wroclaw',1),
+('Sala J',50,'Wroclaw',2);
+
+
+-- TABELA: Harmonogram
+
+CREATE TABLE Harmonogram (
+    id_harmonogramu INT IDENTITY PRIMARY KEY,
+    id_wydarzenia INT,
+    id_sali INT,
+    data DATE,
+    godzina_start TIME,
+    godzina_koniec TIME,
+    FOREIGN KEY (id_wydarzenia) REFERENCES Wydarzenia(id_wydarzenia),
+    FOREIGN KEY (id_sali) REFERENCES Sale(id_sali)
+);
+
+-- TABELA: Zapisy
+
+CREATE TABLE Zapisy (
+    id_zapisu INT IDENTITY PRIMARY KEY,
+    id_uzytkownika INT,
+    id_wydarzenia INT,
+    data_zapisu DATE DEFAULT GETDATE(),
+    status NVARCHAR(20) CHECK (status IN ('aktywny','anulowany')),
+    obecny BIT DEFAULT 0,
+    FOREIGN KEY (id_uzytkownika) REFERENCES Uzytkownicy(id_uzytkownika),
+    FOREIGN KEY (id_wydarzenia) REFERENCES Wydarzenia(id_wydarzenia)
+);
+
+
+-- TABELA: Platnosci
+
+CREATE TABLE Platnosci (
+    id_platnosci INT IDENTITY PRIMARY KEY,
+    id_zapisu INT UNIQUE,
+    kwota DECIMAL(8,2),
+    data_platnosci DATE,
+    metoda NVARCHAR(30) CHECK (metoda IN ('karta','gotowka','przelew')),
+    oplacona BIT DEFAULT 0,
+    FOREIGN KEY (id_zapisu) REFERENCES Zapisy(id_zapisu)
+);
+
+
+-- TABELA: Opinie
+CREATE TABLE Opinie (
+    id_opinii INT IDENTITY PRIMARY KEY,
+    id_wydarzenia INT,
+    id_uzytkownika INT,
+    ocena INT CHECK (ocena BETWEEN 1 AND 5),
+    komentarz NVARCHAR(300),
+    data_dodania DATE DEFAULT GETDATE(),
+    FOREIGN KEY (id_wydarzenia) REFERENCES Wydarzenia(id_wydarzenia),
+    FOREIGN KEY (id_uzytkownika) REFERENCES Uzytkownicy(id_uzytkownika)
+);
+
+
+-- TABELA: Uzytkownicy_Role
+
+CREATE TABLE Uzytkownicy_Role (
+    id INT IDENTITY PRIMARY KEY,
+    id_uzytkownika INT,
+    id_roli INT,
+    data_nadania DATE DEFAULT GETDATE(),
+    aktywna BIT DEFAULT 1,
+    uwagi NVARCHAR(200),
+    FOREIGN KEY (id_uzytkownika) REFERENCES Uzytkownicy(id_uzytkownika),
+    FOREIGN KEY (id_roli) REFERENCES Role(id_roli)
+);
+
+
+-- WIDOKI
+
+CREATE VIEW Widok_Wydarzenia_Zapisy AS
+SELECT w.nazwa, COUNT(z.id_zapisu) AS liczba_zapisow
+FROM Wydarzenia w
+LEFT JOIN Zapisy z ON w.id_wydarzenia = z.id_wydarzenia
+GROUP BY w.nazwa;
+
+GO
+
+CREATE VIEW Widok_Uzytkownicy_Role AS
+SELECT u.imie, u.nazwisko, r.nazwa_roli
+FROM Uzytkownicy u
+JOIN Uzytkownicy_Role ur ON u.id_uzytkownika = ur.id_uzytkownika
+JOIN Role r ON ur.id_roli = r.id_roli;
+GO
+
+
+-- PROCEDURY
+
+CREATE PROCEDURE DodajZapis
+    @id_uzytkownika INT,
+    @id_wydarzenia INT
+AS
+BEGIN
+    INSERT INTO Zapisy(id_uzytkownika, id_wydarzenia, status)
+    VALUES (@id_uzytkownika, @id_wydarzenia, 'aktywny');
+END;
+GO
+
+CREATE PROCEDURE ZmienStatusPlatnosci
+    @id_zapisu INT
+AS
+BEGIN
+    UPDATE Platnosci
+    SET oplacona = 1, data_platnosci = GETDATE()
+    WHERE id_zapisu = @id_zapisu;
+END;
+GO
